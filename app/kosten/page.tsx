@@ -1,8 +1,9 @@
 "use client";
 
 import { useApp } from "@/lib/store";
-import { formatEUR } from "@/lib/calc";
+import { formatBRL } from "@/lib/calc";
 import KostenCard from "@/components/KostenCard";
+import StatCard from "@/components/StatCard";
 import Button from "@/components/Button";
 
 export default function KostenPage() {
@@ -10,15 +11,24 @@ export default function KostenPage() {
 
   return (
     <div>
-      <div className="mb-4 flex gap-2">
-        <div className="flex-1 rounded-xl border border-[var(--color-border)] p-3" style={{ background: "var(--color-blue-bg)" }}>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-muted)]">Betaald</p>
-          <p className="text-base font-bold">{formatEUR(totals.betaald)}</p>
-        </div>
-        <div className="flex-1 rounded-xl border border-[var(--color-border)] p-3" style={{ background: "var(--color-orange-bg)" }}>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-muted)]">Nog te betalen</p>
-          <p className="text-base font-bold">{formatEUR(totals.nogTeBetalen)}</p>
-        </div>
+      <div className="mb-4 grid grid-cols-2 gap-2">
+        <StatCard label="Betaald" value={formatBRL(totals.betaald)} tone="blue" />
+        <StatCard label="Nog te betalen" value={formatBRL(totals.nogTeBetalen)} tone="orange" />
+        <StatCard
+          label="Resterend budget"
+          value={formatBRL(totals.resterend)}
+          tone={totals.resterend < 0 ? "red" : "green"}
+        />
+        <StatCard
+          label="Gemiddeld/dag"
+          value={totals.perDag !== null ? formatBRL(totals.perDag) : "—"}
+          sub={
+            totals.daysRemaining > 0
+              ? `over ${totals.daysRemaining} ${totals.daysRemaining === 1 ? "dag" : "dagen"}`
+              : "vakantie is voorbij"
+          }
+          tone="neutral"
+        />
       </div>
 
       {state.kosten.map((item) => (

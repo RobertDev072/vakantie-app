@@ -46,7 +46,7 @@ export function buildDefaultKosten(): KostenPost[] {
 
 export function buildDefaultState(): AppState {
   return {
-    startbudget: 5500,
+    startbudget: 33000, // R$, komt overeen met €5.500 bij de standaardkoers
     wisselkoers: 6.0,
     tripStart: TRIP_START,
     tripEnd: TRIP_END,

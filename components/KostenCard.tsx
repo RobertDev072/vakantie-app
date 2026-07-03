@@ -1,7 +1,7 @@
 "use client";
 
 import { useApp } from "@/lib/store";
-import { formatEUR, toEUR } from "@/lib/calc";
+import { formatBRL, toBRL } from "@/lib/calc";
 import AmountInput from "@/components/AmountInput";
 import type { KostenPost } from "@/lib/types";
 
@@ -44,9 +44,9 @@ export default function KostenCard({ item }: { item: KostenPost }) {
             value={item.bedrag}
             onChange={(n) => updateKosten(item.id, "bedrag", n)}
           />
-          {item.valuta === "R$" && (
+          {item.valuta === "€" && (
             <p className="mt-1 text-[11px] text-[var(--color-muted)]">
-              ≈ {formatEUR(toEUR(item, state.wisselkoers))}
+              ≈ {formatBRL(toBRL(item, state.wisselkoers))}
             </p>
           )}
         </div>

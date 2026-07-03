@@ -1,7 +1,7 @@
 "use client";
 
 import { useApp } from "@/lib/store";
-import { formatEUR } from "@/lib/calc";
+import { formatBRL } from "@/lib/calc";
 import Card from "@/components/Card";
 import StatCard from "@/components/StatCard";
 import Button from "@/components/Button";
@@ -22,7 +22,7 @@ export default function DashboardPage() {
               Startbudget
             </span>
             <div className="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] px-2.5 py-2">
-              <span className="text-sm text-[var(--color-muted)]">€</span>
+              <span className="text-sm text-[var(--color-muted)]">R$</span>
               <AmountInput
                 value={state.startbudget}
                 onChange={setStartbudget}
@@ -46,11 +46,14 @@ export default function DashboardPage() {
             </div>
           </label>
         </div>
+        <p className="mt-2 text-[11px] text-[var(--color-muted)]">
+          Alle bedragen in deze app staan in reais (R$). De koers wordt alleen gebruikt om kostenposten die in € zijn ingevoerd mee te tellen.
+        </p>
         <Button
           variant="secondary"
           className="mt-3"
           onClick={() => {
-            if (confirm("Startbudget en wisselkoers resetten naar standaard (€5.500 / €1 = R$6,00)?")) {
+            if (confirm("Startbudget en wisselkoers resetten naar standaard (R$ 33.000 / €1 = R$6,00)?")) {
               resetSettings();
             }
           }}
@@ -61,17 +64,17 @@ export default function DashboardPage() {
 
       <Card title="Overzicht">
         <div className="grid grid-cols-2 gap-3">
-          <StatCard label="Totaal betaald" value={formatEUR(totals.betaald)} tone="blue" />
-          <StatCard label="Nog te betalen" value={formatEUR(totals.nogTeBetalen)} tone="orange" />
-          <StatCard label="Totaal uitgegeven" value={formatEUR(totals.uitgegeven)} tone="neutral" />
+          <StatCard label="Totaal betaald" value={formatBRL(totals.betaald)} tone="blue" />
+          <StatCard label="Nog te betalen" value={formatBRL(totals.nogTeBetalen)} tone="orange" />
+          <StatCard label="Totaal uitgegeven" value={formatBRL(totals.uitgegeven)} tone="neutral" />
           <StatCard
             label="Resterend budget"
-            value={formatEUR(totals.resterend)}
+            value={formatBRL(totals.resterend)}
             tone={totals.resterend < 0 ? "red" : "green"}
           />
           <StatCard
             label="Gemiddeld/dag"
-            value={totals.perDag !== null ? formatEUR(totals.perDag) : "—"}
+            value={totals.perDag !== null ? formatBRL(totals.perDag) : "—"}
             sub={
               totals.daysRemaining > 0
                 ? `over ${totals.daysRemaining} resterende ${totals.daysRemaining === 1 ? "dag" : "dagen"}`
@@ -92,7 +95,7 @@ export default function DashboardPage() {
             />
           </div>
           <p className="mt-1.5 text-[11px] text-[var(--color-muted)]">
-            {formatEUR(totals.uitgegeven)} van {formatEUR(state.startbudget)} gepland ({totals.pct.toFixed(0)}%)
+            {formatBRL(totals.uitgegeven)} van {formatBRL(state.startbudget)} gepland ({totals.pct.toFixed(0)}%)
           </p>
         </div>
       </Card>

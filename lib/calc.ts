@@ -1,12 +1,15 @@
 import { getDaysRemaining, getTripProgressText } from "./date";
 import type { AppState, Currency } from "./types";
 
-export function toEUR(item: { bedrag: number; valuta: Currency }, wisselkoers: number): number {
-  return item.valuta === "R$" ? item.bedrag / (wisselkoers || 1) : item.bedrag;
+// Alle optelsommen en het budget draaien in reais (R$), want dat is wat je ter
+// plekke daadwerkelijk uitgeeft. Kostenposten in € (bijv. iets dat via een
+// Nederlandse creditcard wordt afgeschreven) worden hiervoor omgerekend.
+export function toBRL(item: { bedrag: number; valuta: Currency }, wisselkoers: number): number {
+  return item.valuta === "€" ? item.bedrag * wisselkoers : item.bedrag;
 }
 
-export function formatEUR(x: number): string {
-  return new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(x);
+export function formatBRL(x: number): string {
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(x);
 }
 
 export type Totals = {
@@ -31,9 +34,9 @@ export function computeTotals(state: AppState): Totals {
   let betaald = 0;
   let nogTeBetalen = 0;
   for (const k of state.kosten) {
-    const eur = toEUR(k, state.wisselkoers);
-    if (k.status === "betaald") betaald += eur;
-    else nogTeBetalen += eur;
+    const brl = toBRL(k, state.wisselkoers);
+    if (k.status === "betaald") betaald += brl;
+    else nogTeBetalen += brl;
   }
   const uitgegeven = betaald + nogTeBetalen;
   const resterend = state.startbudget - uitgegeven;

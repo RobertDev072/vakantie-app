@@ -1,19 +1,14 @@
 "use client";
 
 import { useApp } from "@/lib/store";
-import { formatBRL, toBRL } from "@/lib/calc";
 import AmountInput from "@/components/AmountInput";
 import type { KostenPost } from "@/lib/types";
 
 const fieldClass =
   "w-full rounded-lg border border-[var(--color-border)] px-2.5 py-2 text-sm outline-none focus:border-[var(--color-primary)]";
-// Zonder w-full: deze select heeft flex-none (sizing via width), dus mag geen
-// concurrerende breedte-klasse hebben, anders "wint" de verkeerde in de Tailwind-cascade.
-const currencySelectClass =
-  "w-24 flex-none rounded-lg border border-[var(--color-border)] px-2 py-2 text-sm outline-none focus:border-[var(--color-primary)]";
 
 export default function KostenCard({ item }: { item: KostenPost }) {
-  const { state, updateKosten, deleteKosten } = useApp();
+  const { updateKosten, deleteKosten } = useApp();
   const betaald = item.status === "betaald";
 
   return (
@@ -37,27 +32,13 @@ export default function KostenCard({ item }: { item: KostenPost }) {
         </button>
       </div>
 
-      <div className="mb-2 flex gap-2">
-        <div className="flex-1">
-          <AmountInput
-            className={fieldClass}
-            value={item.bedrag}
-            onChange={(n) => updateKosten(item.id, "bedrag", n)}
-          />
-          {item.valuta === "€" && (
-            <p className="mt-1 text-[11px] text-[var(--color-muted)]">
-              ≈ {formatBRL(toBRL(item, state.wisselkoers))}
-            </p>
-          )}
-        </div>
-        <select
-          className={currencySelectClass}
-          value={item.valuta}
-          onChange={(e) => updateKosten(item.id, "valuta", e.target.value)}
-        >
-          <option value="€">€</option>
-          <option value="R$">R$</option>
-        </select>
+      <div className="mb-2 flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] px-2.5 py-2">
+        <span className="text-sm text-[var(--color-muted)]">R$</span>
+        <AmountInput
+          className="w-full bg-transparent text-sm outline-none"
+          value={item.bedrag}
+          onChange={(n) => updateKosten(item.id, "bedrag", n)}
+        />
       </div>
 
       <input

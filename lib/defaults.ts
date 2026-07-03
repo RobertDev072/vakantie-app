@@ -34,20 +34,19 @@ export function buildDefaultPlanning(): PlanningDag[] {
 
 export function buildDefaultKosten(): KostenPost[] {
   return [
-    { id: "k1", onderdeel: "Hotels reeds geboekt", bedrag: 1007, valuta: "€", betaalmethode: "ING creditcard (limiet €1.000)", status: "betaald", opmerking: "" },
-    { id: "k2", onderdeel: "Huurauto", bedrag: 4410, valuta: "R$", betaalmethode: "PIX of debit bij aankomst", status: "nog betalen", opmerking: "" },
-    { id: "k3", onderdeel: "Borg auto", bedrag: 2000, valuta: "R$", betaalmethode: "PIX of debit bij aankomst", status: "nog betalen", opmerking: "Wordt terugbetaald bij inlevering auto" },
-    { id: "k4", onderdeel: "Benzine", bedrag: 1700, valuta: "R$", betaalmethode: "", status: "nog betalen", opmerking: "" },
-    { id: "k5", onderdeel: "Taxi luchthaven", bedrag: 100, valuta: "R$", betaalmethode: "", status: "nog betalen", opmerking: "" },
-    { id: "k6", onderdeel: "Dagbudget eten + leuke dingen", bedrag: 15600, valuta: "R$", betaalmethode: "", status: "nog betalen", opmerking: "R$ 600 per dag × 26 dagen" },
-    { id: "k7", onderdeel: "Nog te boeken hotels", bedrag: 950, valuta: "€", betaalmethode: "", status: "nog betalen", opmerking: "Kan lager uitvallen als we bij familie slapen" },
+    { id: "k1", onderdeel: "Hotels reeds geboekt", bedrag: 6042, betaalmethode: "ING creditcard (limiet €1.000)", status: "betaald", opmerking: "Was €1.007, omgerekend bij €1 = R$6" },
+    { id: "k2", onderdeel: "Huurauto", bedrag: 4410, betaalmethode: "PIX of debit bij aankomst", status: "nog betalen", opmerking: "" },
+    { id: "k3", onderdeel: "Borg auto", bedrag: 2000, betaalmethode: "PIX of debit bij aankomst", status: "nog betalen", opmerking: "Wordt terugbetaald bij inlevering auto" },
+    { id: "k4", onderdeel: "Benzine", bedrag: 1700, betaalmethode: "", status: "nog betalen", opmerking: "" },
+    { id: "k5", onderdeel: "Taxi luchthaven", bedrag: 100, betaalmethode: "", status: "nog betalen", opmerking: "" },
+    { id: "k6", onderdeel: "Dagbudget eten + leuke dingen", bedrag: 15600, betaalmethode: "", status: "nog betalen", opmerking: "R$ 600 per dag × 26 dagen" },
+    { id: "k7", onderdeel: "Nog te boeken hotels", bedrag: 5700, betaalmethode: "", status: "nog betalen", opmerking: "Was ca. €950, kan lager uitvallen als we bij familie slapen" },
   ];
 }
 
 export function buildDefaultState(): AppState {
   return {
-    startbudget: 33000, // R$, komt overeen met €5.500 bij de standaardkoers
-    wisselkoers: 6.0,
+    startbudget: 33000, // R$, komt overeen met €5.500 bij €1 = R$6
     tripStart: TRIP_START,
     tripEnd: TRIP_END,
     planning: buildDefaultPlanning(),

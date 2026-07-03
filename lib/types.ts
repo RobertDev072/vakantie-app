@@ -1,4 +1,3 @@
-export type Currency = "€" | "R$";
 export type KostenStatus = "betaald" | "nog betalen";
 
 export type PlanningDag = {
@@ -12,16 +11,14 @@ export type PlanningDag = {
 export type KostenPost = {
   id: string;
   onderdeel: string;
-  bedrag: number;
-  valuta: Currency;
+  bedrag: number; // in R$
   betaalmethode: string;
   status: KostenStatus;
   opmerking: string;
 };
 
 export type AppState = {
-  startbudget: number;
-  wisselkoers: number; // 1 euro = wisselkoers reais
+  startbudget: number; // in R$
   tripStart: string;
   tripEnd: string;
   planning: PlanningDag[];

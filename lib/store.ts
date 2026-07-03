@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 import { buildDefaultKosten, buildDefaultPlanning, buildDefaultState } from "./defaults";
 import { computeTotals } from "./calc";
-import type { AppState, KostenPost, KostenStatus, Currency, PlanningDag } from "./types";
+import type { AppState, KostenPost, KostenStatus, PlanningDag } from "./types";
 
 // Kleine module-level store (vergelijkbaar met Zustand) i.p.v. React Context: state leeft
 // buiten React, useSyncExternalStore levert bij hydratie eerst DEFAULT_STATE (gelijk aan de
@@ -14,6 +14,31 @@ let state: AppState = DEFAULT_STATE;
 let loadedFromStorage = false;
 const listeners = new Set<() => void>();
 
+// Eenmalige migratie voor data die is opgeslagen vóór de overstap naar "alles in R$":
+// posten die toen in € stonden, rekenen we om met de laatst bekende koers en verliezen
+// daarna hun valutaveld, zodat het opgeslagen bedrag weer klopt met de R$-werkelijkheid.
+function migrateLegacy(parsed: {
+  startbudget?: number;
+  wisselkoers?: number;
+  tripStart?: string;
+  tripEnd?: string;
+  planning?: PlanningDag[];
+  kosten?: Array<KostenPost & { valuta?: "€" | "R$" }>;
+}): AppState {
+  const legacyKoers = typeof parsed.wisselkoers === "number" && parsed.wisselkoers > 0 ? parsed.wisselkoers : 6;
+  const kosten = (parsed.kosten ?? []).map((k) => {
+    const { valuta, ...rest } = k;
+    return valuta === "€" ? { ...rest, bedrag: rest.bedrag * legacyKoers } : rest;
+  });
+  return {
+    startbudget: parsed.startbudget ?? DEFAULT_STATE.startbudget,
+    tripStart: parsed.tripStart ?? DEFAULT_STATE.tripStart,
+    tripEnd: parsed.tripEnd ?? DEFAULT_STATE.tripEnd,
+    planning: parsed.planning ?? DEFAULT_STATE.planning,
+    kosten,
+  };
+}
+
 function loadOnce(): AppState {
   if (loadedFromStorage || typeof window === "undefined") return state;
   loadedFromStorage = true;
@@ -22,7 +47,7 @@ function loadOnce(): AppState {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed && Array.isArray(parsed.planning) && Array.isArray(parsed.kosten)) {
-        state = parsed as AppState;
+        state = migrateLegacy(parsed);
       }
     }
   } catch {
@@ -63,10 +88,6 @@ export function useApp() {
     mutate((s) => ({ ...s, startbudget: Number.isFinite(value) ? value : 0 }));
   }, []);
 
-  const setWisselkoers = useCallback((value: number) => {
-    mutate((s) => ({ ...s, wisselkoers: Number.isFinite(value) && value > 0 ? value : 1 }));
-  }, []);
-
   const updatePlanning = useCallback((datum: string, field: keyof PlanningDag, value: string) => {
     mutate((s) => ({
       ...s,
@@ -83,7 +104,6 @@ export function useApp() {
           const n = typeof value === "number" ? value : parseFloat(value);
           return { ...k, bedrag: Number.isFinite(n) ? n : 0 };
         }
-        if (field === "valuta") return { ...k, valuta: value as Currency };
         if (field === "status") return { ...k, status: value as KostenStatus };
         return { ...k, [field]: value };
       }),
@@ -94,10 +114,7 @@ export function useApp() {
     const id = "k" + Date.now();
     mutate((s) => ({
       ...s,
-      kosten: [
-        ...s.kosten,
-        { id, onderdeel: "", bedrag: 0, valuta: "€", betaalmethode: "", status: "nog betalen", opmerking: "" },
-      ],
+      kosten: [...s.kosten, { id, onderdeel: "", bedrag: 0, betaalmethode: "", status: "nog betalen", opmerking: "" }],
     }));
     return id;
   }, []);
@@ -108,7 +125,7 @@ export function useApp() {
 
   const resetSettings = useCallback(() => {
     const def = buildDefaultState();
-    mutate((s) => ({ ...s, startbudget: def.startbudget, wisselkoers: def.wisselkoers }));
+    mutate((s) => ({ ...s, startbudget: def.startbudget }));
   }, []);
 
   const resetPlanning = useCallback(() => {
@@ -127,7 +144,6 @@ export function useApp() {
     state: snapshot,
     totals,
     setStartbudget,
-    setWisselkoers,
     updatePlanning,
     updateKosten,
     addKosten,

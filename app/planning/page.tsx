@@ -1,16 +1,26 @@
 "use client";
 
+import { useMemo } from "react";
 import { useApp } from "@/lib/store";
-import PlanningDayCard from "@/components/PlanningDayCard";
+import { groupPlanningDays } from "@/lib/planning";
+import { todayISO } from "@/lib/date";
+import PlanningSegment from "@/components/PlanningSegment";
 import Button from "@/components/Button";
 
 export default function PlanningPage() {
   const { state, resetPlanning } = useApp();
+  const groups = useMemo(() => groupPlanningDays(state.planning), [state.planning]);
+
+  const defaultOpenKey = useMemo(() => {
+    const today = todayISO();
+    const current = groups.find((g) => today >= g.days[0].datum && today <= g.days[g.days.length - 1].datum);
+    return (current ?? groups[0])?.key;
+  }, [groups]);
 
   return (
     <div>
-      {state.planning.map((day) => (
-        <PlanningDayCard key={day.datum} day={day} />
+      {groups.map((g) => (
+        <PlanningSegment key={g.key} group={g} defaultOpen={g.key === defaultOpenKey} />
       ))}
       <Button
         variant="secondary"

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Vakantieplanner Brazilië 2026</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B4%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#f3f6f4;
+    --card:#ffffff;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --border:#e2e8e4;
+    --radius:14px;
+    --primary:#00895c;
+    --primary-dark:#046a48;
+    --blue:#0057b8;
+    --blue-bg:#e6f0fb;
+    --green:#16a34a;
+    --green-bg:#dcfce7;
+    --orange:#d97706;
+    --orange-bg:#fef3c7;
+    --red:#dc2626;
+    --red-bg:#fee2e2;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    padding-bottom:40px;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:0 14px;}
+
+  header.app-header{
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;
+    padding:20px 14px 16px;
+  }
+  header.app-header .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:10px;}
+  header.app-header h1{margin:0;font-size:1.4rem;}
+  header.app-header p{margin:4px 0 0;font-size:0.9rem;opacity:0.92;}
+  #trip-progress-text{font-weight:600;}
+  .btn-danger-outline{
+    background:rgba(255,255,255,0.12);
+    color:#fff;
+    border:1px solid rgba(255,255,255,0.5);
+    border-radius:8px;
+    padding:8px 12px;
+    font-size:0.8rem;
+    cursor:pointer;
+  }
+  .btn-danger-outline:hover{background:rgba(255,255,255,0.22);}
+
+  nav.tabs{
+    display:flex;
+    gap:6px;
+    background:var(--card);
+    border-bottom:1px solid var(--border);
+    position:sticky;
+    top:0;
+    z-index:10;
+    padding:8px 14px 0;
+  }
+  nav.tabs .wrap{display:flex;gap:6px;width:100%;max-width:1100px;margin:0 auto;padding:0;}
+  nav.tabs button{
+    flex:1;
+    background:none;
+    border:none;
+    padding:10px 8px;
+    font-size:0.92rem;
+    font-weight:600;
+    color:var(--muted);
+    cursor:pointer;
+    border-bottom:3px solid transparent;
+  }
+  nav.tabs button.active{color:var(--primary);border-bottom-color:var(--primary);}
+
+  main{padding-top:16px;}
+  section.page{display:none;}
+  section.page.active{display:block;}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-bottom:16px;
+  }
+  .card h2{margin:0 0 12px;font-size:1.05rem;}
+
+  .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+  @media(min-width:640px){.stats-grid{grid-template-columns:repeat(3,1fr);}}
+  @media(min-width:960px){.stats-grid{grid-template-columns:repeat(4,1fr);}}
+
+  .stat-card{
+    background:#f8faf9;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .stat-card.highlight-blue{background:var(--blue-bg);}
+  .stat-card.highlight-orange{background:var(--orange-bg);}
+  .stat-card.highlight-green{background:var(--green-bg);}
+  .stat-card.negative{background:var(--red-bg);}
+  .stat-label{font-size:0.78rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.02em;}
+  .stat-value{font-size:1.25rem;font-weight:700;}
+  .stat-sub{font-size:0.75rem;color:var(--muted);}
+  .stat-card.negative .stat-value{color:var(--red);}
+
+  .input-affix{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:4px 8px;}
+  .input-affix span{font-size:0.85rem;color:var(--muted);white-space:nowrap;}
+  .input-affix input{border:none;outline:none;width:100%;font-size:1.05rem;font-weight:700;color:var(--text);background:transparent;}
+
+  .progress-wrap{margin-top:14px;}
+  .progress-bar{background:#e5e7eb;border-radius:999px;height:14px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--primary);border-radius:999px;transition:width 0.3s;}
+  .progress-fill.over{background:var(--red);}
+  .progress-label{font-size:0.8rem;color:var(--muted);margin-top:6px;}
+
+  .btn-secondary{
+    background:#fff;
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:9px 14px;
+    border-radius:8px;
+    font-size:0.85rem;
+    cursor:pointer;
+    margin-top:12px;
+    margin-right:8px;
+  }
+  .btn-secondary:hover{background:#f1f5f3;}
+  .btn-primary{
+    background:var(--primary);
+    border:1px solid var(--primary);
+    color:#fff;
+    padding:9px 14px;
+    border-radius:8px;
+    font-size:0.85rem;
+    cursor:pointer;
+    margin-top:12px;
+    margin-right:8px;
+  }
+  .btn-primary:hover{background:var(--primary-dark);}
+
+  .table-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;min-width:640px;}
+  table.responsive{min-width:0;}
+  thead th{
+    text-align:left;
+    font-size:0.75rem;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    color:var(--muted);
+    border-bottom:1px solid var(--border);
+    padding:8px 6px;
+    white-space:nowrap;
+  }
+  tbody td{padding:6px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  td.cell-date{font-weight:600;white-space:nowrap;font-size:0.88rem;}
+
+  input[type="text"],input[type="number"],select{
+    width:100%;
+    padding:7px 8px;
+    border:1px solid var(--border);
+    border-radius:6px;
+    font-size:0.88rem;
+    font-family:inherit;
+    background:#fff;
+    color:var(--text);
+  }
+  input:focus,select:focus{outline:2px solid var(--primary);outline-offset:1px;}
+
+  .acc-input.acc-geboekt{background:var(--green-bg);border-color:#a7e3b8;}
+  .acc-input.acc-nogboeken{background:var(--orange-bg);border-color:#f3d391;}
+
+  select.status-select.status-betaald{background:var(--green-bg);border-color:#a7e3b8;font-weight:600;color:#0f5132;}
+  select.status-select.status-nogbetalen{background:var(--orange-bg);border-color:#f3d391;font-weight:600;color:#7a4a02;}
+
+  .hint{font-size:0.72rem;color:var(--muted);margin-top:3px;}
+
+  td.actions{text-align:center;}
+  .btn-delete{
+    background:var(--red-bg);
+    border:1px solid #f3c2c2;
+    border-radius:6px;
+    padding:6px 10px;
+    cursor:pointer;
+    font-size:0.9rem;
+  }
+  .btn-delete:hover{background:#fecaca;}
+
+  footer.app-footer{
+    max-width:1100px;
+    margin:20px auto 0;
+    padding:0 14px;
+    color:var(--muted);
+    font-size:0.75rem;
+    text-align:center;
+  }
+
+  @media (max-width:700px){
+    table.responsive thead{display:none;}
+    table.responsive, table.responsive tbody, table.responsive tr, table.responsive td{display:block;width:100%;}
+    table.responsive tr{margin-bottom:12px;border:1px solid var(--border);border-radius:10px;padding:6px 10px;background:#fff;}
+    table.responsive td{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:7px 0;
+      border:none;
+      border-bottom:1px dashed var(--border);
+      text-align:right;
+    }
+    table.responsive td:last-child{border-bottom:none;}
+    table.responsive td::before{
+      content:attr(data-label);
+      font-weight:600;
+      color:var(--muted);
+      font-size:0.75rem;
+      text-align:left;
+      flex:0 0 auto;
+      margin-right:8px;
+    }
+    table.responsive td.actions{justify-content:center;}
+    table.responsive td.actions::before{content:'';}
+    table.responsive td.cell-date{justify-content:space-between;}
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="wrap">
+    <div>
+      <h1>🌴 Vakantie Brazilië 2026</h1>
+      <p>28 augustus – 23 september 2026 · <span id="trip-progress-text"></span></p>
+    </div>
+    <button class="btn-danger-outline" id="reset-all-btn" type="button">Reset alles naar standaard</button>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="wrap">
+    <button type="button" class="tab-btn active" data-tab="dashboard">Dashboard</button>
+    <button type="button" class="tab-btn" data-tab="planning">Planning</button>
+    <button type="button" class="tab-btn" data-tab="kosten">Kosten</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- DASHBOARD -->
+  <section class="page active" id="page-dashboard">
+    <div class="card">
+      <h2>Budget instellingen</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <label for="startbudget-input" class="stat-label">Startbudget</label>
+          <div class="input-affix"><span>€</span><input type="number" id="startbudget-input" min="0" step="10"></div>
+        </div>
+        <div class="stat-card">
+          <label for="wisselkoers-input" class="stat-label">Wisselkoers (€1 =)</label>
+          <div class="input-affix"><span>R$</span><input type="number" id="wisselkoers-input" min="0.01" step="0.01"></div>
+        </div>
+      </div>
+      <button class="btn-secondary" id="reset-dashboard-btn" type="button">Reset budget &amp; koers naar standaard</button>
+    </div>
+
+    <div class="card">
+      <h2>Overzicht</h2>
+      <div class="stats-grid">
+        <div class="stat-card highlight-blue">
+          <span class="stat-label">Totaal betaald</span>
+          <span class="stat-value" id="stat-betaald">€0</span>
+        </div>
+        <div class="stat-card highlight-orange">
+          <span class="stat-label">Nog te betalen</span>
+          <span class="stat-value" id="stat-nogtebetalen">€0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Totaal uitgegeven (gepland)</span>
+          <span class="stat-value" id="stat-uitgegeven">€0</span>
+        </div>
+        <div class="stat-card highlight-green" id="stat-resterend-card">
+          <span class="stat-label">Resterend budget</span>
+          <span class="stat-value" id="stat-resterend">€0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Gemiddeld/dag te besteden</span>
+          <span class="stat-value" id="stat-per-dag">€0</span>
+          <span class="stat-sub" id="stat-dagen-sub"></span>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+        <div class="progress-label" id="progress-label"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLANNING -->
+  <section class="page" id="page-planning">
+    <div class="card">
+      <h2>Dag-tot-dag planning</h2>
+      <div class="table-wrap">
+        <table class="responsive" id="planning-table">
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Plaats</th>
+              <th>Wat gaan we doen</th>
+              <th>Status accommodatie</th>
+              <th>Notities</th>
+            </tr>
+          </thead>
+          <tbody id="planning-tbody"></tbody>
+        </table>
+      </div>
+      <button class="btn-secondary" id="reset-planning-btn" type="button">Reset planning naar standaard</button>
+    </div>
+  </section>
+
+  <!-- KOSTEN -->
+  <section class="page" id="page-kosten">
+    <div class="card">
+      <h2>Kosten</h2>
+      <div class="table-wrap">
+        <table class="responsive" id="kosten-table">
+          <thead>
+            <tr>
+              <th>Onderdeel</th>
+              <th>Bedrag</th>
+              <th>Valuta</th>
+              <th>Betaalmethode</th>
+              <th>Status</th>
+              <th>Opmerking</th>
+              <th>Actie</th>
+            </tr>
+          </thead>
+          <tbody id="kosten-tbody"></tbody>
+        </table>
+      </div>
+      <button class="btn-primary" id="add-kosten-btn" type="button">+ Kostenpost toevoegen</button>
+      <button class="btn-secondary" id="reset-kosten-btn" type="button">Reset kosten naar standaard</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">
+  Alle gegevens worden lokaal in je browser opgeslagen (localStorage). Er wordt niets naar een server verstuurd.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var STORAGE_KEY = 'brazilie2026_vakantieplanner_v1';
+  var TRIP_START = '2026-08-28';
+  var TRIP_END = '2026-09-23';
+
+  var SEGMENTS = [
+    {start:'2026-08-28', end:'2026-09-03', plaats:'Fortaleza',        acc:'Hotel Luzeiros - geboekt'},
+    {start:'2026-09-04', end:'2026-09-11', plaats:'Fortaleza',        acc:'Nog boeken'},
+    {start:'2026-09-12', end:'2026-09-12', plaats:'Canoa Quebrada',   acc:'Jardim dos Orixás - geboekt'},
+    {start:'2026-09-13', end:'2026-09-13', plaats:'',                 acc:'Nog boeken'},
+    {start:'2026-09-14', end:'2026-09-16', plaats:'Jericoacoara',     acc:'Residence Bons Ventos - geboekt'},
+    {start:'2026-09-17', end:'2026-09-23', plaats:'Fortaleza',        acc:'Nog boeken'}
+  ];
+
+  // ---------- date helpers (all UTC-based to avoid timezone drift) ----------
+  function addDaysISO(iso, n){
+    var parts = iso.split('-').map(Number);
+    var dt = new Date(Date.UTC(parts[0], parts[1]-1, parts[2]));
+    dt.setUTCDate(dt.getUTCDate()+n);
+    return dt.toISOString().slice(0,10);
+  }
+  function toUTCms(iso){
+    var parts = iso.split('-').map(Number);
+    return Date.UTC(parts[0], parts[1]-1, parts[2]);
+  }
+  function dateDiffDays(a, b){
+    return Math.round((toUTCms(b) - toUTCms(a)) / 86400000);
+  }
+  function generateDateRange(startISO, endISO){
+    var result = [];
+    var cur = startISO;
+    while(cur <= endISO){
+      result.push(cur);
+      cur = addDaysISO(cur, 1);
+    }
+    return result;
+  }
+  function todayISO(){
+    var d = new Date();
+    var y = d.getFullYear();
+    var m = String(d.getMonth()+1).padStart(2,'0');
+    var day = String(d.getDate()).padStart(2,'0');
+    return y+'-'+m+'-'+day;
+  }
+  function formatDateNL(iso){
+    var parts = iso.split('-').map(Number);
+    var dt = new Date(Date.UTC(parts[0], parts[1]-1, parts[2]));
+    return dt.toLocaleDateString('nl-NL', {weekday:'short', day:'numeric', month:'short', timeZone:'UTC'});
+  }
+  function formatEUR(x){
+    return new Intl.NumberFormat('nl-NL', {style:'currency', currency:'EUR'}).format(x);
+  }
+  function escapeAttr(str){
+    return String(str == null ? '' : str)
+      .replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ---------- default data ----------
+  function buildDefaultPlanning(){
+    var days = generateDateRange(TRIP_START, TRIP_END);
+    return days.map(function(d){
+      var seg = SEGMENTS.find(function(s){ return d >= s.start && d <= s.end; });
+      return {
+        datum: d,
+        plaats: seg ? seg.plaats : '',
+        wat: '',
+        statusAccommodatie: seg ? seg.acc : '',
+        notities: ''
+      };
+    });
+  }
+  function buildDefaultKosten(){
+    return [
+      {id:'k1', onderdeel:'Hotels reeds geboekt', bedrag:1007, valuta:'€', betaalmethode:'ING creditcard (limiet €1.000)', status:'betaald', opmerking:''},
+      {id:'k2', onderdeel:'Huurauto', bedrag:4410, valuta:'R$', betaalmethode:'PIX of debit bij aankomst', status:'nog betalen', opmerking:''},
+      {id:'k3', onderdeel:'Borg auto', bedrag:2000, valuta:'R$', betaalmethode:'PIX of debit bij aankomst', status:'nog betalen', opmerking:'Wordt terugbetaald bij inlevering auto'},
+      {id:'k4', onderdeel:'Benzine', bedrag:1700, valuta:'R$', betaalmethode:'', status:'nog betalen', opmerking:''},
+      {id:'k5', onderdeel:'Taxi luchthaven', bedrag:100, valuta:'R$', betaalmethode:'', status:'nog betalen', opmerking:''},
+      {id:'k6', onderdeel:'Dagbudget eten + leuke dingen', bedrag:15600, valuta:'R$', betaalmethode:'', status:'nog betalen', opmerking:'R$ 600 per dag × 26 dagen'},
+      {id:'k7', onderdeel:'Nog te boeken hotels', bedrag:950, valuta:'€', betaalmethode:'', status:'nog betalen', opmerking:'Kan lager uitvallen als we bij familie slapen'}
+    ];
+  }
+  function buildDefaultState(){
+    return {
+      startbudget: 5500,
+      wisselkoers: 6.00,
+      tripStart: TRIP_START,
+      tripEnd: TRIP_END,
+      planning: buildDefaultPlanning(),
+      kosten: buildDefaultKosten()
+    };
+  }
+
+  // ---------- state persistence ----------
+  var state;
+  function loadState(){
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      try{
+        var parsed = JSON.parse(raw);
+        if(parsed && parsed.planning && parsed.kosten) return parsed;
+      }catch(e){ /* corrupt data, fall through to defaults */ }
+    }
+    var def = buildDefaultState();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(def));
+    return def;
+  }
+  function saveState(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  // ---------- budget calculations ----------
+  function toEUR(item){
+    var bedrag = parseFloat(item.bedrag) || 0;
+    return item.valuta === 'R$' ? bedrag / (state.wisselkoers || 1) : bedrag;
+  }
+  function getDaysRemaining(){
+    var today = todayISO();
+    if(today < state.tripStart) return dateDiffDays(state.tripStart, state.tripEnd) + 1;
+    if(today > state.tripEnd) return 0;
+    return dateDiffDays(today, state.tripEnd) + 1;
+  }
+  function getTripProgressText(){
+    var today = todayISO();
+    var total = dateDiffDays(state.tripStart, state.tripEnd) + 1;
+    if(today < state.tripStart){
+      var untilStart = dateDiffDays(today, state.tripStart);
+      return 'nog ' + untilStart + ' ' + (untilStart === 1 ? 'dag' : 'dagen') + ' tot vertrek';
+    }
+    if(today > state.tripEnd){
+      return 'vakantie afgelopen';
+    }
+    var dayNum = dateDiffDays(state.tripStart, today) + 1;
+    return 'dag ' + dayNum + ' van ' + total;
+  }
+
+  function updateDashboard(){
+    document.getElementById('startbudget-input').value = state.startbudget;
+    document.getElementById('wisselkoers-input').value = state.wisselkoers;
+    document.getElementById('trip-progress-text').textContent = getTripProgressText();
+
+    var betaald = 0, nogTeBetalen = 0;
+    state.kosten.forEach(function(k){
+      var eur = toEUR(k);
+      if(k.status === 'betaald') betaald += eur; else nogTeBetalen += eur;
+    });
+    var uitgegeven = betaald + nogTeBetalen;
+    var resterend = state.startbudget - uitgegeven;
+
+    document.getElementById('stat-betaald').textContent = formatEUR(betaald);
+    document.getElementById('stat-nogtebetalen').textContent = formatEUR(nogTeBetalen);
+    document.getElementById('stat-uitgegeven').textContent = formatEUR(uitgegeven);
+    document.getElementById('stat-resterend').textContent = formatEUR(resterend);
+    document.getElementById('stat-resterend-card').classList.toggle('negative', resterend < 0);
+
+    var daysRemaining = getDaysRemaining();
+    var perDagEl = document.getElementById('stat-per-dag');
+    var dagenSub = document.getElementById('stat-dagen-sub');
+    if(daysRemaining > 0){
+      perDagEl.textContent = formatEUR(resterend / daysRemaining);
+      dagenSub.textContent = 'over ' + daysRemaining + ' resterende ' + (daysRemaining === 1 ? 'dag' : 'dagen');
+    } else {
+      perDagEl.textContent = '—';
+      dagenSub.textContent = 'vakantie is voorbij';
+    }
+
+    var pct = state.startbudget > 0 ? (uitgegeven / state.startbudget) * 100 : 0;
+    var fill = document.getElementById('progress-fill');
+    fill.style.width = Math.min(100, Math.max(0, pct)).toFixed(1) + '%';
+    fill.classList.toggle('over', uitgegeven > state.startbudget);
+    document.getElementById('progress-label').textContent =
+      formatEUR(uitgegeven) + ' van ' + formatEUR(state.startbudget) + ' gepland (' + pct.toFixed(0) + '%)';
+  }
+
+  // ---------- planning rendering ----------
+  function accClass(text){
+    var t = String(text || '').toLowerCase();
+    if(t.indexOf('geboekt') !== -1) return 'acc-geboekt';
+    if(t.indexOf('boeken') !== -1) return 'acc-nogboeken';
+    return '';
+  }
+  function renderPlanning(){
+    var tbody = document.getElementById('planning-tbody');
+    tbody.innerHTML = state.planning.map(function(p){
+      return '<tr data-id="' + p.datum + '">' +
+        '<td data-label="Datum" class="cell-date">' + formatDateNL(p.datum) + '</td>' +
+        '<td data-label="Plaats"><input type="text" data-field="plaats" value="' + escapeAttr(p.plaats) + '" aria-label="Plaats"></td>' +
+        '<td data-label="Wat gaan we doen"><input type="text" data-field="wat" value="' + escapeAttr(p.wat) + '" aria-label="Wat gaan we doen"></td>' +
+        '<td data-label="Status accommodatie"><input type="text" data-field="statusAccommodatie" class="acc-input ' + accClass(p.statusAccommodatie) + '" value="' + escapeAttr(p.statusAccommodatie) + '" aria-label="Status accommodatie"></td>' +
+        '<td data-label="Notities"><input type="text" data-field="notities" value="' + escapeAttr(p.notities) + '" aria-label="Notities"></td>' +
+        '</tr>';
+    }).join('');
+  }
+  function handlePlanningInput(e){
+    var t = e.target;
+    if(t.dataset && t.dataset.field === 'statusAccommodatie'){
+      t.className = 'acc-input ' + accClass(t.value);
+    }
+  }
+  function handlePlanningChange(e){
+    var t = e.target;
+    var row = t.closest('tr');
+    if(!row || !t.dataset || !t.dataset.field) return;
+    var item = state.planning.find(function(p){ return p.datum === row.dataset.id; });
+    if(!item) return;
+    item[t.dataset.field] = t.value;
+    saveState();
+  }
+  function resetPlanning(){
+    if(!confirm('Weet je zeker dat je de planning wilt resetten naar de standaardwaarden? Eigen aanpassingen gaan verloren.')) return;
+    state.planning = buildDefaultPlanning();
+    saveState();
+    renderPlanning();
+  }
+
+  // ---------- kosten rendering ----------
+  function renderKosten(){
+    var tbody = document.getElementById('kosten-tbody');
+    tbody.innerHTML = state.kosten.map(function(k){
+      var statusClass = k.status === 'betaald' ? 'status-betaald' : 'status-nogbetalen';
+      var hint = '';
+      if(k.valuta === 'R$'){
+        hint = '<div class="hint">≈ ' + formatEUR(toEUR(k)) + '</div>';
+      }
+      return '<tr data-id="' + k.id + '">' +
+        '<td data-label="Onderdeel"><input type="text" data-field="onderdeel" value="' + escapeAttr(k.onderdeel) + '" aria-label="Onderdeel"></td>' +
+        '<td data-label="Bedrag"><input type="number" step="0.01" min="0" data-field="bedrag" value="' + k.bedrag + '" aria-label="Bedrag">' + hint + '</td>' +
+        '<td data-label="Valuta"><select data-field="valuta" aria-label="Valuta">' +
+          '<option value="€"' + (k.valuta === '€' ? ' selected' : '') + '>€</option>' +
+          '<option value="R$"' + (k.valuta === 'R$' ? ' selected' : '') + '>R$</option>' +
+        '</select></td>' +
+        '<td data-label="Betaalmethode"><input type="text" data-field="betaalmethode" value="' + escapeAttr(k.betaalmethode) + '" aria-label="Betaalmethode"></td>' +
+        '<td data-label="Status"><select data-field="status" class="status-select ' + statusClass + '" aria-label="Status">' +
+          '<option value="betaald"' + (k.status === 'betaald' ? ' selected' : '') + '>Betaald</option>' +
+          '<option value="nog betalen"' + (k.status === 'nog betalen' ? ' selected' : '') + '>Nog betalen</option>' +
+        '</select></td>' +
+        '<td data-label="Opmerking"><input type="text" data-field="opmerking" value="' + escapeAttr(k.opmerking) + '" aria-label="Opmerking"></td>' +
+        '<td data-label="" class="actions"><button type="button" class="btn-delete" title="Verwijderen">🗑️</button></td>' +
+        '</tr>';
+    }).join('');
+  }
+  function handleKostenChange(e){
+    var t = e.target;
+    var row = t.closest('tr');
+    if(!row || !t.dataset || !t.dataset.field) return;
+    var item = state.kosten.find(function(k){ return k.id === row.dataset.id; });
+    if(!item) return;
+    if(t.dataset.field === 'bedrag'){
+      item.bedrag = parseFloat(t.value) || 0;
+    } else {
+      item[t.dataset.field] = t.value;
+    }
+    saveState();
+    renderKosten();
+    updateDashboard();
+  }
+  function handleKostenClick(e){
+    if(!e.target.classList.contains('btn-delete')) return;
+    var row = e.target.closest('tr');
+    if(!row) return;
+    if(!confirm('Weet je zeker dat je deze kostenpost wilt verwijderen?')) return;
+    state.kosten = state.kosten.filter(function(k){ return k.id !== row.dataset.id; });
+    saveState();
+    renderKosten();
+    updateDashboard();
+  }
+  function addKostenRow(){
+    var newItem = {
+      id: 'k' + Date.now(),
+      onderdeel: '',
+      bedrag: 0,
+      valuta: '€',
+      betaalmethode: '',
+      status: 'nog betalen',
+      opmerking: ''
+    };
+    state.kosten.push(newItem);
+    saveState();
+    renderKosten();
+    updateDashboard();
+    var tbody = document.getElementById('kosten-tbody');
+    var lastInput = tbody.querySelector('tr:last-child input[data-field="onderdeel"]');
+    if(lastInput) lastInput.focus();
+  }
+  function resetKosten(){
+    if(!confirm('Weet je zeker dat je de kosten wilt resetten naar de standaardwaarden? Eigen aanpassingen gaan verloren.')) return;
+    state.kosten = buildDefaultKosten();
+    saveState();
+    renderKosten();
+    updateDashboard();
+  }
+
+  // ---------- dashboard input handlers ----------
+  function handleStartbudgetChange(e){
+    state.startbudget = parseFloat(e.target.value) || 0;
+    saveState();
+    updateDashboard();
+  }
+  function handleWisselkoersChange(e){
+    state.wisselkoers = parseFloat(e.target.value) || 1;
+    saveState();
+    updateDashboard();
+    renderKosten();
+  }
+  function resetDashboardSettings(){
+    if(!confirm('Startbudget en wisselkoers resetten naar standaard (€5.500 / €1 = R$6,00)?')) return;
+    var def = buildDefaultState();
+    state.startbudget = def.startbudget;
+    state.wisselkoers = def.wisselkoers;
+    saveState();
+    updateDashboard();
+    renderKosten();
+  }
+  function resetAll(){
+    if(!confirm('Weet je zeker dat je ALLES (budget, planning en kosten) wilt resetten naar de standaardwaarden? Dit kan niet ongedaan gemaakt worden.')) return;
+    state = buildDefaultState();
+    saveState();
+    renderAll();
+  }
+
+  // ---------- tabs ----------
+  function initTabs(){
+    var buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        buttons.forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        document.querySelectorAll('section.page').forEach(function(p){ p.classList.remove('active'); });
+        document.getElementById('page-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+  }
+
+  function renderAll(){
+    updateDashboard();
+    renderPlanning();
+    renderKosten();
+  }
+
+  function init(){
+    state = loadState();
+    initTabs();
+
+    document.getElementById('startbudget-input').addEventListener('change', handleStartbudgetChange);
+    document.getElementById('wisselkoers-input').addEventListener('change', handleWisselkoersChange);
+    document.getElementById('reset-dashboard-btn').addEventListener('click', resetDashboardSettings);
+    document.getElementById('reset-all-btn').addEventListener('click', resetAll);
+
+    var planningTbody = document.getElementById('planning-tbody');
+    planningTbody.addEventListener('input', handlePlanningInput);
+    planningTbody.addEventListener('change', handlePlanningChange);
+    document.getElementById('reset-planning-btn').addEventListener('click', resetPlanning);
+
+    var kostenTbody = document.getElementById('kosten-tbody');
+    kostenTbody.addEventListener('change', handleKostenChange);
+    kostenTbody.addEventListener('click', handleKostenClick);
+    document.getElementById('add-kosten-btn').addEventListener('click', addKostenRow);
+    document.getElementById('reset-kosten-btn').addEventListener('click', resetKosten);
+
+    renderAll();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>

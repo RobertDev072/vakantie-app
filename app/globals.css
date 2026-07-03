@@ -1,26 +1,66 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-bg: #f3f6f4;
+  --color-card: #ffffff;
+  --color-text: #1f2937;
+  --color-muted: #6b7280;
+  --color-border: #e2e8e4;
+  --color-primary: #00895c;
+  --color-primary-dark: #046a48;
+  --color-blue: #0057b8;
+  --color-blue-bg: #e6f0fb;
+  --color-green: #16a34a;
+  --color-green-bg: #dcfce7;
+  --color-orange: #d97706;
+  --color-orange-bg: #fef3c7;
+  --color-red: #dc2626;
+  --color-red-bg: #fee2e2;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--color-bg);
+  --color-card: var(--color-card);
+  --color-text: var(--color-text);
+  --color-muted: var(--color-muted);
+  --color-border: var(--color-border);
+  --color-primary: var(--color-primary);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-blue: var(--color-blue);
+  --color-blue-bg: var(--color-blue-bg);
+  --color-green: var(--color-green);
+  --color-green-bg: var(--color-green-bg);
+  --color-orange: var(--color-orange);
+  --color-orange-bg: var(--color-orange-bg);
+  --color-red: var(--color-red);
+  --color-red-bg: var(--color-red-bg);
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }

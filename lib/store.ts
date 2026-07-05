@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
 import { buildDefaultKosten, buildDefaultPlanning, buildDefaultState } from "./defaults";
 import { computeTotals } from "./calc";
 import type { AppState, KostenPost, KostenStatus, PlanningDag } from "./types";
@@ -61,10 +61,66 @@ function persist() {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
+// Server is de gedeelde waarheid (voor pc + telefoon(s) samen), localStorage is de
+// snelle lokale cache die de app ook laat werken zonder database of netwerk.
+let pushTimer: ReturnType<typeof setTimeout> | null = null;
+function schedulePush() {
+  if (typeof window === "undefined") return;
+  if (pushTimer) clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => {
+    fetch("/api/state", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(state),
+    }).catch(() => {});
+  }, 800);
+}
+
+function isValidRemoteState(v: unknown): v is AppState {
+  return !!v && typeof v === "object" && Array.isArray((v as AppState).planning) && Array.isArray((v as AppState).kosten);
+}
+
+function applyRemoteState(remote: AppState) {
+  state = remote;
+  persist();
+  listeners.forEach((l) => l());
+}
+
+let syncedWithServer = false;
+async function syncWithServer() {
+  if (syncedWithServer) return;
+  syncedWithServer = true;
+  try {
+    const res = await fetch("/api/state");
+    if (!res.ok) return; // geen database geconfigureerd: gewoon lokaal blijven werken
+    const remote = await res.json();
+    if (isValidRemoteState(remote)) {
+      applyRemoteState(remote);
+    } else {
+      // database is nog leeg: zet onze huidige (lokale) data erin als startpunt
+      schedulePush();
+    }
+  } catch {
+    // netwerkfout: gewoon lokaal doorgaan
+  }
+}
+
+async function refetchFromServer() {
+  try {
+    const res = await fetch("/api/state");
+    if (!res.ok) return;
+    const remote = await res.json();
+    if (isValidRemoteState(remote)) applyRemoteState(remote);
+  } catch {
+    // netwerkfout: negeren, lokale data blijft staan
+  }
+}
+
 function mutate(updater: (s: AppState) => AppState) {
   state = updater(state);
   persist();
   listeners.forEach((l) => l());
+  schedulePush();
 }
 
 function subscribe(listener: () => void) {
@@ -83,6 +139,15 @@ function getServerSnapshot(): AppState {
 export function useApp() {
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const totals = useMemo(() => computeTotals(snapshot), [snapshot]);
+
+  useEffect(() => {
+    syncWithServer();
+    function onVisible() {
+      if (document.visibilityState === "visible") refetchFromServer();
+    }
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, []);
 
   const setStartbudget = useCallback((value: number) => {
     mutate((s) => ({ ...s, startbudget: Number.isFinite(value) ? value : 0 }));
